@@ -1,6 +1,16 @@
 .data # data section
 # set EAX here
+LUA:
+  .long 5 #lua
+  .long 2 #lca
+  .long 1 #ca...
+  .long 2
 
+p:
+  .long $LUA #pLUA
+  .long 2 #request index
+
+movl $p, %eax
 #
 l_UA:
   .long (%eax)
