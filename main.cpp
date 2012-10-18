@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int readsa(int length, int i)
+int readsa()
 {
   for (int j = 0; j < length_CA / 2; j++) // length_CA = CA - 1 int
   {
