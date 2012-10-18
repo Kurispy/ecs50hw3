@@ -28,7 +28,6 @@ _start:
 
 # (%eax) = address of length of UA; (%eax) + 4 = address of length of CA; (%eax) + 8 = address of CA; %eax + 4 = index
 
-readsa:	
   movl CA, %ecx #temp
 	incl (%ecx, %ebx, 16) #go to CA[2*j]
 	cmpl %ecx, index #first part of if i>=ca[2*j]
