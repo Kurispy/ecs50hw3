@@ -96,34 +96,84 @@ writesa:
 	jnz i0w1c0
 	ret #do nothing
 
-lw1c0:
+# l = left; r= right; m = middle; w = write value; cL = checkLeft; cR = checkRight
+
+lw1cL0:
   addl $2, l_CA
   call shiftright
   movl $0, (CA)
   movl $1, 4(CA)
   ret
 
-lw1c1:
+lw1cL1:
   movl $0, (CA)
   incl 4(CA)
   ret
 
-lw0c0:
+lw0cL0:
   call shiftleft
   ret
 
-lw0c1:
+lw0cL1:
   movl $1, (CA)
   decl 4(CA)
 
-rw1c0:
+rw1cL0:
   addl $2, l_CA
   movl CA, %ebx
   movl l_CA, %ecx
   movl l_UA, %edx
   decl %edx
-  movl %edx, -8(%ebx, %ecx,)
-  movl $1, -4(%ebx, %ecx,)
+  movl %edx, -8(%ebx, %ecx, 4)
+  movl $1, -4(%ebx, %ecx, 4)
+
+rw1cL1:
+  movl CA, %ebx
+  movl l_CA, %ecx
+  incl -4(%ebx, %ecx, 4)
+
+rw0cL0:
+  subl $2, l_CA
+
+rw0cL1:
+  movl CA, %ebx
+  movl l_CA, %ecx
+  decl -4(%ebx, %ecx, 4)
+
+mw1cL0cR0:
+  addl $2, l_CA
+  call whereAmI #sets iCA
+  call shiftRight #uses iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  movl index, %edx
+  addl %edx, (%ebx, %ecx, 4)
+  movl $1, 4(%ebx, %ecx, 4)
+
+mw1cL1cR1:
+  call whereAmI #sets iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  addl 4(%ebx, %ecx, 4), -4(%ebx, %ecx, 4)
+  incl 4(%ebx, %ecx, 4)
+  addl $2, iCA
+  call shiftLeft #uses iCA
+  subl $2, l_CA
+
+mw1cL0cR1:
+  call whereAmI #sets iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  decl (%ebx, %ecx, 4)
+  incl 4(%ebx, %ecx, 4)
+
+mw1cL1cR0:
+  call whereAmI #sets iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  incl -4(%ebx, %ecx, 4)
+
+
 
   
 done:
