@@ -1,14 +1,19 @@
 .data # data section
 # set EAX here
 LUA:
-  .long 5 #lua
-  .long 2 #lca
+  .long 9 #lua
+  .long 4 #lca
   .long 1 #ca...
   .long 2
+  .long 5
+  .long 3
 
-p:
+rparam:
   .long 0 #pLUA
-  .long 2 #request index
+  .long 7 #request index
+
+wparam:
+  .long 
 # EAX Set
 
 l_UA:
@@ -54,6 +59,7 @@ init:
 
   movl $0, %ebx # EBX will serve as the current index for CA
 
+
 readsa:  
   movl CA, %ecx
   movl (%ecx, %ebx, 8), %ecx #go to CA[2*j]
@@ -76,6 +82,3 @@ jump_for:
 	jnz readsa #exit loop when j=l_CA
 	movl $0, %ebp #else store 0 in %ebp
 	ret
-
-  
-done:
