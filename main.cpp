@@ -94,11 +94,53 @@ void writesa()
         {
           iCA = whereAmI();
           CA[iCA - 1] += CA[iCA +1] + 1;
+          shiftLeft(iCA + 2);
+          l_CA -= 2;
         }
       }
       else if (checkLeft() = 0 && checkRight() = 1)
       {
-        
+        iCA = whereAmI();
+        CA[iCA]--;
+        CA[iCA + 1]++;
+      }
+      else if (checkLeft() = 1 && checkRight() = 0)
+      {
+        iCA = whereAmI();
+        CA[iCA - 1]++;
+      }
+    } //end of write value = 1
+    else if (write value = 0)
+    {
+      if(checkLeft() = checkRight())
+      {
+        if (checkLeft() = 0)
+        {
+          iCA = whereAmI();
+          shiftLeft(iCA);
+          l_CA -= 2;
+        }
+        else if (checkLeft() = 1)
+        {
+          l_CA += 2;
+          iCA = whereAmI();
+          shiftRight(iCA);
+          temp = CA[iCA - 1] + CA[iCA - 2];
+          CA[iCA - 1] = index - 1 - CA[iCA - 2];
+          CA[iCA] = index + 1;
+          CA[iCA + 1] = temp - CA[iCA];
+        }
+      }
+      else if (checkLeft() = 0 && checkRight() = 1)
+      {
+        iCA = whereAmI();
+        CA[iCA]++;
+        CA[iCA + 1]--;
+      }
+      else if (checkLeft() = 1 && checkRight() = 0)
+      {
+        iCA = whereAmI();
+        CA[iCA - 1]--;
       }
     }
   }
@@ -110,6 +152,11 @@ void shiftRight(index)
   {
     CA[i+2] = CA[i];
   }
+}
+
+void shiftLeft(index)
+{
+  
 }
 
 int main(int argc, char** argv) {
