@@ -55,13 +55,15 @@ init:
   movl $0, %ebx # EBX will serve as the current index for CA
 
 readsa:  
-  movl CA, %ecx #temp
-	incl (%ecx, %ebx, 8) #go to CA[2*j]
+  movl CA, %ecx
+  movl (%ecx, %ebx, 8), %ecx #go to CA[2*j]
+  movl (%ecx), %ecx
 	cmpl %ecx, index #first part of if i>=ca[2*j]
 	jl jump_for #jump if CA < index
 	
 	movl CA, %ecx #temp
 	addl $4, %ecx #ca[2*j+1]
+  movl (%ecx), %ecx
 	cmpl %ecx, index #second part of if
 	jge jump_for #jump to iteration if >=0
 	movl $1, %ebp #store 1 in %ebp if correct
