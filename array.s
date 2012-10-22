@@ -57,13 +57,14 @@ init:
 readsa:  
   movl CA, %ecx
   movl (%ecx, %ebx, 8), %ecx #go to CA[2*j]
-  movl (%ecx), %ecx
 	cmpl %ecx, index #first part of if i>=ca[2*j]
 	jl jump_for #jump if CA < index
+  movl %ecx, %edx #store for CA[2*j] + CA[2*j+1]
+  
 	
 	movl CA, %ecx #temp
-	addl $4, %ecx #ca[2*j+1]
-  movl (%ecx), %ecx
+	movl 4(%ecx, %ebx, 8), %ecx #go to CA[2*j+1]
+  addl %edx, %ecx
 	cmpl %ecx, index #second part of if
 	jge jump_for #jump to iteration if >=0
 	movl $1, %ebp #store 1 in %ebp if correct
