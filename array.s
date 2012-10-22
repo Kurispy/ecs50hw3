@@ -93,12 +93,37 @@ writesa:
 	call readsa  #see if there is a 1 at that requested INDEX
         movl writeValue, %edx
 	cmpl %edx, %ebp
-	jnz  something
-	ret
+	jnz i0w1c0
+	ret #do nothing
 
-something:  #do something if the added value is NOT the same as the index
-	
+lw1c0:
+  addl $2, l_CA
+  call shiftright
+  movl $0, (CA)
+  movl $1, 4(CA)
+  ret
 
+lw1c1:
+  movl $0, (CA)
+  incl 4(CA)
+  ret
+
+lw0c0:
+  call shiftleft
+  ret
+
+lw0c1:
+  movl $1, (CA)
+  decl 4(CA)
+
+rw1c0:
+  addl $2, l_CA
+  movl CA, %ebx
+  movl l_CA, %ecx
+  movl l_UA, %edx
+  decl %edx
+  movl %edx, -8(%ebx, %ecx,)
+  movl $1, -4(%ebx, %ecx,)
 
   
 done:

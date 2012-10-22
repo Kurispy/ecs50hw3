@@ -156,7 +156,7 @@ void shiftRight(index)
 
 void shiftLeft(index)
 {
-  
+   
 }
 
 int main(int argc, char** argv) {
