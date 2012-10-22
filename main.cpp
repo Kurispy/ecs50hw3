@@ -19,24 +19,97 @@ void writesa()
   {
     Dont do anything.
   }
-  else if (index = 0 && write vale = 1)
+  else if (index = 0)
   {
-    if (checkRight() = 0)
+    if (write value = 1)
     {
-      for (int i = l_CA; i >= 0; i--)
+      if (checkRight() = 0)
       {
-        CA[i+2] = CA[i];
+        l_CA += 2;
+        shiftRight();
+        CA[0] = 0;
+        CA[1] = 1;
+      } 
+      else if (checkRIght() = 1)
+      {
+        CA[0] = 0;
+        CA[1]++;
       }
-      CA[0] = 0;
-      CA[1] = 1;
-    } 
-    else if (checkRIght() = 1)
+    }
+    else if (write value = 0)
     {
-      CA[0] = 0;
-      CA[1]++;
+      if (checkRight() = 0)
+      {
+        shiftLeft();
+      } 
+      else if (checkRIght() = 1)
+      {
+        CA[0] = 1;
+        CA[1]--;
+      }
     }
   }
-  
+  else if (index = l_UA - 1)
+  {
+    if (write value = 1)
+    {
+      if (checkLeft() = 0)
+      {
+        l_CA++;
+        CA[l_CA - 2] = l_UA - 1;
+        CA[l_CA - 1] = 1;
+      }
+      else if (checkLeft() = 1)
+      {
+        CA[L_CA - 1]++;
+      }
+    }
+    else if (write value = 0)
+    {
+      if (checkLeft() = 0)
+      {
+        l_CA -= 2;
+      }
+      else if (checkLeft() = 1)
+      {
+        CA[l_CA - 1]--;
+      }
+    }
+  }
+  else
+  {
+    if (write value = 1)
+    {
+      if(checkLeft() = checkRight())
+      {
+        if (checkLeft() = 0)
+        {
+          l_CA += 2;
+          iCA = whereAmI();
+          shiftRight(iCA);
+          CA[iCA] = index;
+          CA[iCA + 1] = 1;
+        }
+        else if (checkLeft() = 1)
+        {
+          iCA = whereAmI();
+          CA[iCA - 1] += CA[iCA +1] + 1;
+        }
+      }
+      else if (checkLeft() = 0 && checkRight() = 1)
+      {
+        
+      }
+    }
+  }
+}
+
+void shiftRight(index)
+{
+  for (int i = l_CA; i >= index; i--)
+  {
+    CA[i+2] = CA[i];
+  }
 }
 
 int main(int argc, char** argv) {
