@@ -13,6 +13,32 @@ int readsa()
   Put 0 in EBP;
 }
 
+void writesa()
+{
+  if (readsa(request index) = write value)
+  {
+    Dont do anything.
+  }
+  else if (index = 0 && write vale = 1)
+  {
+    if (checkRight() = 0)
+    {
+      for (int i = l_CA; i >= 0; i--)
+      {
+        CA[i+2] = CA[i];
+      }
+      CA[0] = 0;
+      CA[1] = 1;
+    } 
+    else if (checkRIght() = 1)
+    {
+      CA[0] = 0;
+      CA[1]++;
+    }
+  }
+  
+}
+
 int main(int argc, char** argv) {
 
   return 0;
