@@ -1,18 +1,18 @@
 .data # data section
 # set EAX here
 LUA:
-  .long 6 #lua
-  .long 6 #lca
-  .long 1 #ca...
+  .long 5 #lua
+  .long 2 #lca
+  .long 2 #ca...
   .long 1
-  .long 3
-  .long 1
+  .long 0
+  .long 0
   .long 5
   .long 1
 
 p:
   .long 0 #pLUA
-  .long 2 #request index
+  .long 0 #request index
   .long 1  #what to write 0 or 1
 # EAX Set 
 
@@ -69,9 +69,6 @@ init:
   movl 4(%eax), %ebx
   movl %ebx, index
 
-  movl 8(%eax), %ebx
-  movl %ebx, writeValue
-
   #set writeValue to EDX
   movl 8(%eax), %ebx
   movl %ebx, writeValue
@@ -80,12 +77,14 @@ init:
   movl $2, %ecx
   idivl %ecx # %eax is now l_CA / 2
 
-  movl $1, %ebx # EBX will serve as the current index for CA
+  ret
 
 readsa:  
   movl CA, %ecx
+  movl $0, %ebx # EBX will serve as the current index for CA
+rsal:
   movl (%ecx, %ebx, 8), %ecx #go to CA[2*j]
-  cmpl %ecx, index #first part of if i>=ca[2*j]
+  cmpl index, %ecx #first part of if i>=ca[2*j]
   jl jump_for #jump if CA < index
   movl %ecx, %edx #store for CA[2*j] + CA[2*j+1]
   
@@ -93,7 +92,7 @@ readsa:
 	movl CA, %ecx #temp
 	movl 4(%ecx, %ebx, 8), %ecx #go to CA[2*j+1]
   	addl %edx, %ecx
-	cmpl %ecx, index #second part of if
+	cmpl index, %ecx #second part of if
 	jge jump_for #jump to iteration if >=0
 	movl $1, %ebp #store 1 in %ebp if correct
 	ret
@@ -101,7 +100,7 @@ readsa:
 jump_for:
 	incl %ebx #j++
 	cmpl %ebx, %eax # is j < length_CA / 2 ?
-	jnz readsa #exit loop when j=l_CA
+	jnz rsal #exit loop when j=l_CA
 	movl $0, %ebp #else store 0 in %ebp
 	ret
 
@@ -130,7 +129,8 @@ goLeftWrite0:
 
 goRightEnd:
     movl l_UA, %eax
-    movl %ebx, -4(%eax) #check if need register
+    decl %eax
+    movl %eax, %ebx #check if need register
     cmpl index, %ebx
     jnz goMid
     cmpl $1, %edx
@@ -339,25 +339,26 @@ mw0cL1cR0:
 
 shiftRight:
   movl l_CA, %ebx #ebx = counter
-  subl $3, %ebx
+  decl %ebx
   movl iCA, %ecx
+  addl $2, %ecx
   movl CA, %eax
 sRLoop:
-  movl (%eax, %ebx, 4), %edx
-  movl %edx, 8(%eax, %ebx, 4)
-  incl %ebx
-  cmpl %ebx, %ecx #i >= iCA
+  movl -8(%eax, %ebx, 4), %edx
+  movl %edx, (%eax, %ebx, 4)
+  decl %ebx
+  cmpl %ecx, %ebx #i >= iCA
   jge sRLoop
   ret
 
 shiftLeft:
   movl iCA, %ebx #ebx = counter
   movl l_CA, %ecx
-  subl $3, %ecx
+  decl %ecx
   movl CA, %eax
 sLLoop:
-  movl 8(%eax, %ebx, 4), %edx
-  movl %edx, (%eax, %ebx, 4)
+  movl (%eax, %ebx, 4), %edx
+  movl %edx, -8(%eax, %ebx, 4)
   decl %ebx
   cmpl %ebx, %ecx #i <= l_CA - 3
   jle sLLoop
@@ -365,9 +366,11 @@ sLLoop:
   
 checkRight:
   incl index
+  movl %ecx, temp
   call readsa
   decl index
   cmpl $1, %ebp
+  movl temp, %ecx
   je cR1
   movl $0, %ebx
   ret
@@ -377,9 +380,11 @@ cR1:
 
 checkLeft:
   decl index
+  movl %ebx, temp
   call readsa
   incl index
   cmpl $1, %ebp
+  movl temp, %ebx
   je cL1
   movl $0, %ecx
   ret
@@ -390,6 +395,7 @@ cL1:
 whereAmI:
   movl $0, %ebx #ebx = counter
   movl l_CA, %ecx
+  decl %ecx
   movl CA, %eax
 wAILoop:
   movl (%eax, %ebx, 4), %edx
@@ -399,8 +405,8 @@ wAILoop:
   addl $2, %ebx
   cmpl %ebx, %ecx # i < l_CA
   jl wAILoop
-  subl $2, %ecx
-  movl %ecx, iCA
+  #subl $2, %edx
+  movl %edx, iCA
   ret
 wAII:
   movl %ebx, iCA
