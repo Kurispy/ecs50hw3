@@ -117,6 +117,7 @@ lw0cL0:
 lw0cL1:
   movl $1, (CA)
   decl 4(CA)
+  ret
 
 rw1cL0:
   addl $2, l_CA
@@ -126,19 +127,23 @@ rw1cL0:
   decl %edx
   movl %edx, -8(%ebx, %ecx, 4)
   movl $1, -4(%ebx, %ecx, 4)
+  ret
 
 rw1cL1:
   movl CA, %ebx
   movl l_CA, %ecx
   incl -4(%ebx, %ecx, 4)
+  ret
 
 rw0cL0:
   subl $2, l_CA
+  ret
 
 rw0cL1:
   movl CA, %ebx
   movl l_CA, %ecx
   decl -4(%ebx, %ecx, 4)
+  ret
 
 mw1cL0cR0:
   addl $2, l_CA
@@ -149,6 +154,7 @@ mw1cL0cR0:
   movl index, %edx
   addl %edx, (%ebx, %ecx, 4)
   movl $1, 4(%ebx, %ecx, 4)
+  ret
 
 mw1cL1cR1:
   call whereAmI #sets iCA
@@ -159,6 +165,7 @@ mw1cL1cR1:
   addl $2, iCA
   call shiftLeft #uses iCA
   subl $2, l_CA
+  ret
 
 mw1cL0cR1:
   call whereAmI #sets iCA
@@ -166,15 +173,60 @@ mw1cL0cR1:
   movl iCA, %ecx
   decl (%ebx, %ecx, 4)
   incl 4(%ebx, %ecx, 4)
+  ret
 
 mw1cL1cR0:
   call whereAmI #sets iCA
   movl CA, %ebx
   movl iCA, %ecx
   incl -4(%ebx, %ecx, 4)
+  ret
 
+mw0cL0cR0:
+  call whereAmI #sets iCA
+  call shiftLeft #uses iCA
+  subl $2, l_CA
+  ret
 
+mw0cL1cR1:
+  addl $2, l_CA
+  call whereAmI #sets iCA
+  call shiftRight #uses iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  movl -4(%ebx, %ecx, 4), %edx #edx will be used to store temp values
+  addl -8(%ebx, %ecx, 4), %edx
+  movl %edx, temp
+  movl index, %edx
+  movl %edx, -4(%ebx, %ecx, 4)
+  decl -4(%ebx, %ecx, 4)
+  movl -8(%ebx, %ecx, 4), %edx 
+  subl %edx, -4(%ebx, %ecx, 4)
+  movl index, %edx
+  movl %edx, (%ebx, %ecx, 4)
+  incl (%ebx, %ecx, 4)
+  movl temp, %edx
+  movl %edx, 4(%ebx, %ecx, 4)
+  movl (%ebx, %ecx, 4), %edx
+  subl %edx, 4(%ebx, %ecx, 4)
+  ret
 
+mw0cL0cR1:
+  call whereAmI #sets iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  incl (%ebx, %ecx, 4)
+  decl 4(%ebx, %ecx, 4)
+  ret
+
+mw0cL1cR0:
+  call whereAmI #sets iCA
+  movl CA, %ebx
+  movl iCA, %ecx
+  decl -4(%ebx, %ecx, 4)
+  ret
+
+#TODO: Logic and functions
   
 done:
 
