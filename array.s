@@ -26,8 +26,14 @@ CA:
 index:
   .long 0 #%eax + 4
 
-writeValue
+writeValue:
   .long 0 #%eax + 8, must be 0 or 1
+
+iCA:
+  .long 0
+
+temp:
+  .long 0
 
 
 .text # code section
@@ -131,7 +137,7 @@ goRightEnd:
     jnz rw1cL1
     call rw1cL0
     
-goRightwrite0:
+goRightWrite0:
     call checkLeft
     cmpl %ecx, 0
     jnz rw0cL1
