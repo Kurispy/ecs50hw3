@@ -29,6 +29,7 @@ index:
 writeValue
   .long 0 #%eax + 8, must be 0 or 1
 
+
 .text # code section
 
 .globl _start
@@ -53,6 +54,9 @@ init:
 
   movl 4(%eax), %ebx
   movl %ebx, index
+
+  movl 8(%eax), %ebx
+  movl %ebx, writeValue
 
   movl l_CA, %eax
   movl $2, %ecx
@@ -100,7 +104,7 @@ writesa:
 
 lw1cR0:
   addl $2, l_CA
-  call shiftright
+  call shiftRight
   movl $0, (CA)
   movl $1, 4(CA)
   ret
@@ -111,7 +115,7 @@ lw1cR1:
   ret
 
 lw0cR0:
-  call shiftleft
+  call shiftLeft
   ret
 
 lw0cR1:
