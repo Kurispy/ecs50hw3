@@ -338,9 +338,10 @@ shiftRight:
   movl l_CA, %ebx #ebx = counter
   subl $3, %ebx
   movl iCA, %ecx
+  movl CA, %eax
 sRLoop:
-  movl (CA, %ebx, 4), %edx
-  movl %edx, 8(CA, %ebx, 4)
+  movl (%eax, %ebx, 4), %edx
+  movl %edx, 8(%eax, %ebx, 4)
   incl %ebx
   cmpl %ebx, %ecx #i >= iCA
   jge sRLoop
@@ -350,9 +351,10 @@ shiftLeft:
   movl iCA, %ebx #ebx = counter
   movl l_CA, %ecx
   subl $3, %ecx
+  movl CA, %eax
 sLLoop:
-  movl 8(CA, %ebx, 4), %edx
-  movl %edx, (CA, %ebx, 4)
+  movl 8(%eax, %ebx, 4), %edx
+  movl %edx, (%eax, %ebx, 4)
   decl %ebx
   cmpl %ebx, %ecx #i <= l_CA - 3
   jle sLLoop
@@ -385,9 +387,10 @@ cL1:
 whereAmI:
   movl $0, %ebx #ebx = counter
   movl l_CA, %ecx
+  movl CA, %eax
 wAILoop:
-  movl (CA, %ebx, 4), %edx
-  addl 4(CA, %ebx, 4), %edx
+  movl (%eax, %ebx, 4), %edx
+  addl 4(%eax, %ebx, 4), %edx
   cmpl index, %edx
   jl wAII
   addl $2, %ebx
