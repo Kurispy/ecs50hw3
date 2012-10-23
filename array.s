@@ -266,8 +266,9 @@ mw1cL1cR1:
   call whereAmI #sets iCA
   movl CA, %ebx
   movl iCA, %ecx
-  addl 4(%ebx, %ecx, 4), -4(%ebx, %ecx, 4)
-  incl 4(%ebx, %ecx, 4)
+  movl 4(%ebx, %ecx, 4), %eax
+  addl %eax, -4(%ebx, %ecx, 4)
+  incl -4(%ebx, %ecx, 4)
   addl $2, iCA
   call shiftLeft #uses iCA
   subl $2, l_CA
