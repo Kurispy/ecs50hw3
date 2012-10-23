@@ -98,23 +98,23 @@ writesa:
 
 # l = left; r= right; m = middle; w = write value; cL = checkLeft; cR = checkRight
 
-lw1cL0:
+lw1cR0:
   addl $2, l_CA
   call shiftright
   movl $0, (CA)
   movl $1, 4(CA)
   ret
 
-lw1cL1:
+lw1cR1:
   movl $0, (CA)
   incl 4(CA)
   ret
 
-lw0cL0:
+lw0cR0:
   call shiftleft
   ret
 
-lw0cL1:
+lw0cR1:
   movl $1, (CA)
   decl 4(CA)
   ret
@@ -226,8 +226,74 @@ mw0cL1cR0:
   decl -4(%ebx, %ecx, 4)
   ret
 
-#TODO: Logic and functions
+#Subroutine Section
+
+shiftRight:
+  movl l_CA, %ebx #ebx = counter
+  subl $3, %ebx
+  movl iCA, %ecx
+sRLoop:
+  movl (CA, %ebx, 4), %edx
+  movl %edx, 8(CA, %ebx, 4)
+  incl %ebx
+  cmpl %ebx, %ecx #i >= iCA
+  jge sRLoop
+  ret
+
+shiftLeft:
+  movl iCA, %ebx #ebx = counter
+  movl l_CA, %ecx
+  subl $3, %ecx
+sLLoop:
+  movl 8(CA, %ebx, 4), %edx
+  movl %edx, (CA, %ebx, 4)
+  decl %ebx
+  cmpl %ebx, %ecx #i <= l_CA - 3
+  jle sLLoop
+  ret
   
+checkRight:
+  incl index
+  call readsa
+  decl index
+  cmpl $1, %ebp
+  je cR1
+  movl $0, %ebx
+  ret
+cR1:
+  movl $1, %ebx
+  ret
+
+checkLeft:
+  decl index
+  call readsa
+  incl index
+  cmpl $1, %ebp
+  je cL1
+  movl $0, %ecx
+  ret
+cL1:
+  movl $1, %ecx
+  ret
+
+whereAmI:
+  movl $0, %ebx #ebx = counter
+  movl l_CA, %ecx
+wAILoop:
+  movl (CA, %ebx, 4), %edx
+  addl 4(CA, %ebx, 4), %edx
+  cmpl index, %edx
+  jl wAII
+  addl $2, %ebx
+  cmpl %ebx, %ecx # i < l_CA
+  jl wAILoop
+  subl $2, %ecx
+  movl %ecx, iCA
+  ret
+wAII:
+  movl %ebx, iCA
+  ret
+
 done:
 
 
