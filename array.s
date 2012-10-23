@@ -35,6 +35,12 @@ writeValue
 .globl _start
 _start:
 
+call init
+
+call writesa
+
+done:
+
 init:
   movl $LUA, %ebx
   movl %ebx, p
@@ -92,13 +98,99 @@ jump_for:
 	ret
 
 writesa: 
-        #store what to write into EDX
+    #store what to write into EDX
 
-	call readsa  #see if there is a 1 at that requested INDEX
-        movl writeValue, %edx
-	cmpl %edx, %ebp
-	jnz i0w1c0
-	ret #do nothing
+    call readsa  #see if there is a 1 at that requested INDEX
+    movl writeValue, %edx
+    cmpl %edx, %ebp
+    je done #do nothing if writevalue and readsa are equal
+
+    cmpl index, 0
+    jnz goRightEnd
+    cmpl %edx, 1
+    jnz goLeftWrite0
+    call checkRight
+    cmpl %ebx, 0
+    jnz lw1cR1
+    call lw1cR0
+
+goLeftWrite0:
+    call checkRight
+    cmpl %ebx, 0
+    jnz lw0cR1
+    call lw0cR0
+
+goRightEnd:
+    movl %ebx, -4(l_UA) #check if need register
+    cmpl index, %ebx
+    jnz goMid
+    cmpl %edx, 1
+    jnz goRightWrite0
+    call checkLeft
+    cmpl %ecx, 0
+    jnz rw1cL1
+    call rw1cL0
+    
+goRightwrite0:
+    call checkLeft
+    cmpl %ecx, 0
+    jnz rw0cL1
+    call rw0cL0
+
+goMid:
+    cmpl %edx, 1
+    jnz goMidWrite0
+    call checkLeft
+    call checkRight
+    cmpl %ebx, %ecx
+    jnz goMidcL0cR1
+    call checkLeft
+    cmpl %ecx, 0
+    jnz mw1cL1cR1
+    call mw1cL0cR0
+
+goMidcL0cR1:
+    call checkLeft
+    cmpl %ecx, 0
+    jnz goMidcL1cR0
+    call checkRight
+    cmpl %ebx, 1
+    jz mw1cL0cR1
+
+goMidcL1cR0:
+    call checkLeft
+    cmpl %ecx, 1
+    jnz goMidWrite0
+    call checkRight
+    cmpl %ebx, 0
+    jz mw1cL1cR0
+
+goMidWrite0:
+    call checkLeft
+    call checkRight
+    cmpl %ebx, %ecx
+    jnz goMidw0cL0cR1
+    call checkLeft
+    cmpl %ecx, 0
+    jnz mw0cL1cR1
+    call mw0cL0cR0
+    
+goMidw0cL0cR1:
+    call checkLeft
+    cmpl %ecx, 0
+    jnz goMidw0cL1cR0
+    call checkRight
+    cmpl %ebx, 1
+    jz mw0cL0cR1
+
+goMidw0cL1cR0:
+    call checkLeft
+    cmpl %ecx, 1
+    jnz done
+    call checkRight
+    cmpl %ebx, 0
+    jz mw0cL1cR0
+    jmp done
 
 # l = left; r= right; m = middle; w = write value; cL = checkLeft; cR = checkRight
 
@@ -297,8 +389,6 @@ wAILoop:
 wAII:
   movl %ebx, iCA
   ret
-
-done:
 
 
 
