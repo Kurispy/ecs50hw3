@@ -111,7 +111,7 @@ writesa:
     cmpl %edx, %ebp
     je done #do nothing if writevalue and readsa are equal
 
-    cmpl index, $0
+    cmpl $0, index
     jnz goRightEnd
     cmpl $1, %edx
     jnz goLeftWrite0
