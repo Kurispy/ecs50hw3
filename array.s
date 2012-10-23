@@ -2,15 +2,17 @@
 # set EAX here
 LUA:
   .long 6 #lua
-  .long 4 #lca
+  .long 6 #lca
   .long 1 #ca...
-  .long 2
+  .long 1
+  .long 3
+  .long 1
   .long 5
   .long 1
 
 p:
   .long 0 #pLUA
-  .long 11 #request index
+  .long 2 #request index
   .long 1  #what to write 0 or 1
 # EAX Set 
 
@@ -70,13 +72,13 @@ init:
   movl 8(%eax), %ebx
   movl %ebx, writeValue
 
-  movl l_CA, %eax
-  movl $2, %ecx
-  idivl %ecx # %eax is now l_CA / 2
-
   #set writeValue to EDX
   movl 8(%eax), %ebx
   movl %ebx, writeValue
+
+  movl l_CA, %eax
+  movl $2, %ecx
+  idivl %ecx # %eax is now l_CA / 2
 
   movl $1, %ebx # EBX will serve as the current index for CA
 
