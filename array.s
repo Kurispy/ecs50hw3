@@ -113,7 +113,7 @@ writesa:
 
     cmpl index, $0
     jnz goRightEnd
-    cmpl %edx, $1
+    cmpl $1, %edx
     jnz goLeftWrite0
     call checkRight
     cmpl %ebx, $0
