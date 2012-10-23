@@ -127,7 +127,8 @@ goLeftWrite0:
     call lw0cR0
 
 goRightEnd:
-    movl %ebx, -4(l_UA) #check if need register
+    movl l_UA, %eax
+    movl %ebx, -4(%eax) #check if need register
     cmpl index, %ebx
     jnz goMid
     cmpl $1, %edx
@@ -203,13 +204,15 @@ goMidw0cL1cR0:
 lw1cR0:
   addl $2, l_CA
   call shiftRight
-  movl $0, (CA)
-  movl $1, 4(CA)
+  movl CA, %eax
+  movl $0, (%eax)
+  movl $1, 4(%eax)
   ret
 
 lw1cR1:
-  movl $0, (CA)
-  incl 4(CA)
+  movl CA, %eax
+  movl $0, (%eax)
+  incl 4(%eax)
   ret
 
 lw0cR0:
@@ -217,8 +220,9 @@ lw0cR0:
   ret
 
 lw0cR1:
-  movl $1, (CA)
-  decl 4(CA)
+  movl CA, %eax
+  movl $1, (%eax)
+  decl 4(%eax)
   ret
 
 rw1cL0:
