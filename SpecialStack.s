@@ -28,11 +28,15 @@ initstack:
   subl $2, %ebx
   movl $-1, (%eax, %ebx, 4) #move -1 to second highest address
   movl $0, 4(%eax, %ebx, 4) #move 0 to highest address
+
+  movl %ebp, %esp
+  popl %ebp
   ret
 
 pushstack:
   pushl %ebp
   movl %esp, %ebp
+
   addl $4, tos #increment special stack
   movl tos, %ebx
   cmpl $-1, (%ebx) #check if element = -1
@@ -40,6 +44,9 @@ pushstack:
   movl 4(%esp), %ebx #move m into ebx
   movl tos, %eax
   movl %ebx, (%eax) #push m onto special stack
+
+  movl %ebp, %esp
+  popl %ebp
   ret
 
 overflow:
@@ -50,17 +57,23 @@ overflow:
   addl $8, %ecx #ecx now points to end of old chunk
   movl %eax, (%ecx) #set highest element in old chunk to address of new chunk
   movl %ecx, (%eax) #set lowest element in new chunk to address of highest element in old chunk
+
+  movl %ebp, %esp
+  popl %ebp
   ret
 
 popstack:
   pushl %ebp
   movl %esp, %ebp
   
+  movl %ebp, %esp
+  popl %ebp
   ret
 
 swapstack:
   pushl %ebp
   movl %esp, %ebp
+
   movl tos, %ecx
   movl %ecx, %esi #esi holds address of lowest element in chunk if there is underflow 
   subl $4, %ecx
@@ -73,6 +86,9 @@ swapstack:
   movl (%esi), %ebx
   movl %ebx, (%ecx)
   movl %edi, (%esi)
+
+  movl %ebp, %esp
+  popl %ebp
   ret  
 
 ssnounderflow:
@@ -80,11 +96,15 @@ ssnounderflow:
   movl -4(%ecx), %edi
   movl %edi, (%ecx)
   movl %esi, -4(%ecx)
+
+  movl %ebp, %esp
+  popl %ebp
   ret
 
 printstack:
   pushl %ebp
   movl %esp, %ebp
+
   movl tos, %ecx
   movl 4(%esp), %ebx #ebx = n
 psloop:
@@ -100,4 +120,7 @@ psnounderflow:
   subl $4, %ecx #decrement special stack pointer
   decl %ebx #decrement n
   jnz psloop
+
+  movl %ebp, %esp
+  popl %ebp
   ret
