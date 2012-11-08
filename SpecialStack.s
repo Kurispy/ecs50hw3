@@ -8,9 +8,10 @@ tos:
 fmt:
   .string "%x\n"
 
-.globl tos
 
 .text
+
+.globl tos
 
 .globl _start
 _start:
@@ -65,6 +66,33 @@ overflow:
 popstack:
   pushl %ebp
   movl %esp, %ebp
+
+  movl tos, %ebx
+  cmpl $-1, (%ebx)
+  jz psunderflow
+  movl (%ebx), %eax #return *tos via eax
+  subl $4, tos
+  movl tos, %ebx
+  cmpl $-1, (%ebx)
+  jz prechunk #jump if first element in chunk in being popped
+  
+  movl %ebp, %esp
+  popl %ebp
+  ret
+
+prechunk:
+  subl $4, tos
+  movl tos, %ebx
+  movl (%ebx), tos
+  subl $8, tos #tos now points to last piece of data in the previous chunk
+
+  movl %ebp, %esp
+  popl %ebp
+  ret
+
+psunderflow:
+  movl 4(%esp), %ebx #ebx now holds address of errorcode
+  movl $1, (%ebx)
   
   movl %ebp, %esp
   popl %ebp
