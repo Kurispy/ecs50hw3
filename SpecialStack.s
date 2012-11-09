@@ -1,4 +1,4 @@
-.equ csize, $5 #chunk size (must be > 4)
+.equ csize, 5 #chunk size (must be > 4)
 
 .data
 
@@ -12,26 +12,27 @@ fmt:
 .text
 
 .globl tos
-
-.globl _start
-_start:
+.globl initstack
+.globl pushstack
+.globl popstack
+.globl swapstack
+.globl printstack
 
 initstack:
-  pushl %ebp
-  movl %esp, %ebp
-  
-  movl csize, (%esp)
+
+  movl $csize, %ebx
+  movl %ebx, (%esp)
   call malloc
-  movl 8(%eax), tos
+  movl %eax, %ebx
+  addl $4, %ebx
+  movl %ebx, tos #tos points to first -1 in stack chunk
   movl $0, (%eax) #move 0 to lowest address
   movl $-1, 4(%eax) #move -1 to second lowest address
-  movl csize, %ebx
+  movl $csize, %ebx
   subl $2, %ebx
   movl $-1, (%eax, %ebx, 4) #move -1 to second highest address
   movl $0, 4(%eax, %ebx, 4) #move 0 to highest address
 
-  movl %ebp, %esp
-  popl %ebp
   ret
 
 pushstack:
@@ -51,7 +52,8 @@ pushstack:
   ret
 
 overflow:
-  movl csize, (%esp)
+  movl $csize, %ebx
+  movl %ebx, (%esp)
   call malloc
   addl $4, tos #tos now point to highest element in chunk
   movl tos, %ecx
@@ -83,7 +85,8 @@ popstack:
 prechunk:
   subl $4, tos
   movl tos, %ebx
-  movl (%ebx), tos
+  movl (%ebx), %ebx
+  movl %ebx, tos
   subl $8, tos #tos now points to last piece of data in the previous chunk
 
   movl %ebp, %esp
