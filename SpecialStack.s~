@@ -4,7 +4,7 @@
 
 tos:
   .long 0
-
+  
 fmt:
   .string "%x\n"
 
@@ -23,7 +23,10 @@ initstack:
   movl %esp, %ebp
   
   movl $csize, %ebx
-  movl %ebx, (%esp)
+  movl $4, %eax
+  imull %ebx
+  pushl %eax
+
   call malloc
   movl %eax, %ebx
   addl $4, %ebx
@@ -34,6 +37,9 @@ initstack:
   subl $2, %ebx
   movl $-1, (%eax, %ebx, 4) #move -1 to second highest address
   movl $0, 4(%eax, %ebx, 4) #move 0 to highest address
+  
+  movl %ebp, %esp
+  popl %ebp
 
   ret
 
@@ -45,24 +51,38 @@ pushstack:
   movl tos, %ebx
   cmpl $-1, (%ebx) #check if element = -1
   jz overflow
-  movl 4(%esp), %ebx #move m into ebx
-  movl tos, %eax
-  movl %ebx, (%eax) #push m onto special stack
+  movl 8(%esp), %ebx #move m into ebx
+  movl tos, %ecx
+  movl %ebx, (%ecx) #push m onto special stack
 
   movl %ebp, %esp
   popl %ebp
+
   ret
 
 overflow:
   movl $csize, %ebx
-  movl %ebx, (%esp)
+  movl $4, %eax
+  imull %ebx
+  pushl %eax
   call malloc
+  
+  movl tos, %ebx
+  movl $-1, (%ebx)
   addl $4, tos #tos now point to highest element in chunk
   movl tos, %ecx
-  addl $8, %ecx #ecx now points to end of old chunk
   movl %eax, (%ecx) #set highest element in old chunk to address of new chunk
   movl %ecx, (%eax) #set lowest element in new chunk to address of highest element in old chunk
-
+  movl $-1, 4(%eax) #move -1 to second lowest address
+  movl $csize, %ebx
+  subl $2, %ebx
+  movl $-1, (%eax, %ebx, 4) #move -1 to second highest address
+  movl $0, 4(%eax, %ebx, 4) #move 0 to highest address
+  
+  addl $8, %eax
+  movl 12(%esp), %ebx
+  movl %ebx, (%eax)
+  movl %eax, tos
   movl %ebp, %esp
   popl %ebp
   ret
@@ -79,6 +99,8 @@ popstack:
   movl tos, %ebx
   cmpl $-1, (%ebx)
   jz prechunk #jump if first element in chunk in being popped
+  movl 8(%esp), %ebx 
+  movl $0, (%ebx)
   
   movl %ebp, %esp
   popl %ebp
@@ -87,16 +109,30 @@ popstack:
 prechunk:
   subl $4, tos
   movl tos, %ebx
+  cmpl $0, (%ebx)  
+  jz firstchunk   
   movl (%ebx), %ebx
   movl %ebx, tos
-  subl $8, tos #tos now points to last piece of data in the previous chunk
-
+  subl $8, tos #tos now points to last piece of data in the previous chunk 
+  movl 8(%esp), %ebx 
+  movl $0, (%ebx)
+  
   movl %ebp, %esp
   popl %ebp
   ret
 
+firstchunk:
+  addl $4, tos 
+  
+  movl 8(%esp), %ebx 
+  movl $0, (%ebx)
+  
+  movl %ebp, %esp
+  popl %ebp
+  ret
+   
 psunderflow:
-  movl 4(%esp), %ebx #ebx now holds address of errorcode
+  movl 8(%esp), %ebx 
   movl $1, (%ebx)
   
   movl %ebp, %esp
@@ -126,32 +162,43 @@ swapstack:
 
 ssnounderflow:
   movl (%ecx), %esi
-  movl -4(%ecx), %edi
+  movl 4(%ecx), %edi
   movl %edi, (%ecx)
-  movl %esi, -4(%ecx)
+  movl %esi, 4(%ecx)
 
   movl %ebp, %esp
   popl %ebp
   ret
 
 printstack:
+  
   pushl %ebp
   movl %esp, %ebp
 
+
+
   movl tos, %ecx
-  movl 4(%esp), %ebx #ebx = n
+  movl 8(%esp), %ebx #ebx = n
 psloop:
+  pushl %ecx
+
+  pushl (%ecx)
+  pushl $fmt
+  call printf
+  addl $8, %esp
+  popl %ecx
+  
+  subl $4, %ecx
+
   cmpl $-1, (%ecx) #check if we need to go to previous chunk
   jnz psnounderflow
   subl $4, %ecx
   movl (%ecx), %ecx #ecx = highest element of previous chunk
   subl $8, %ecx #ecx now points to next printable element
 psnounderflow:
-  pushl (%ecx)
-  pushl $fmt
-  call printf
-  subl $4, %ecx #decrement special stack pointer
+  
   decl %ebx #decrement n
+
   jnz psloop
 
   movl %ebp, %esp

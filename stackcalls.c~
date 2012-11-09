@@ -9,12 +9,24 @@ extern void printstack(int n);
 
 int main(void)
 {
-	int x, *errcode;
+	int x, *errcode, y;
+	y = 1;
+	errcode = &y;
+	
 	initstack();
 	pushstack(9);
 	x = popstack(errcode);
 	pushstack(5);
+	pushstack(8);
+	pushstack(14);
+	pushstack(9);
+	pushstack(2);
+	pushstack(3);
+	pushstack(4);
 	swapstack();
-	printstack(2);
+	printstack(7);
+
+	
+	return 0;
 }
 

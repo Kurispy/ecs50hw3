@@ -24,6 +24,7 @@ main:
 	call	swapstack
 	movl	$2, (%esp)
 	call	printstack
+	movl	$0, %eax
 	leave
 	.cfi_restore 5
 	.cfi_def_cfa 4, 4
@@ -31,5 +32,5 @@ main:
 	.cfi_endproc
 .LFE0:
 	.size	main, .-main
-	.ident	"GCC: (Ubuntu/Linaro 4.6.3-1ubuntu5) 4.6.3"
+	.ident	"GCC: (Ubuntu/Linaro 4.7.2-2ubuntu1) 4.7.2"
 	.section	.note.GNU-stack,"",@progbits
